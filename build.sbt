@@ -1,17 +1,20 @@
-import Common._
+name := "spark-tnse"
+scalaVersion := "2.11.12"
+version := "1.0"
+organization := "com.github.saurfang"
 
-lazy val root = Project("spark-tsne", file(".")).
-  settings(commonSettings: _*).
-  aggregate(core, vis, examples)
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
+scalacOptions ++= Seq("-target:jvm-1.8", "-deprecation", "-feature")
 
-lazy val core = tsneProject("spark-tsne-core").
-  settings(Dependencies.core)
+parallelExecution in test := false
+updateOptions := updateOptions.value.withCachedResolution(true)
 
-lazy val vis = tsneProject("spark-tsne-player").
-  dependsOn(core)
+logLevel := Level.Debug
 
-lazy val examples = tsneProject("spark-tsne-examples").
-  dependsOn(core, vis).
-  settings(fork in run := true).
-  settings(Dependencies.core).
-  settings(SparkSubmit.settings: _*)
+libraryDependencies := Seq(
+    "org.apache.spark" %% "spark-mllib" % "2.2.0" % "provided",
+    "org.scalanlp" %% "breeze-natives" % "0.13.2",
+    "org.slf4j" % "slf4j-api" % "1.7.26",
+    "org.slf4j" % "slf4j-log4j12" % "1.7.26",
+    "org.scalatest" %% "scalatest" % "3.0.6" % "test"
+)
